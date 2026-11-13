@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="midnight" data-icons="nova">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decklet — Widgets, Icon Packs & Themes for Windows and Android</title>
+<meta name="description" content="Decklet is the widget platform for Windows and Android. Beautiful widgets, icon packs and themes — or create your own with Decklet Studio.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%236c5ce7'/><rect x='12' y='12' width='18' height='18' rx='5' fill='white' opacity='.95'/><rect x='34' y='12' width='18' height='10' rx='5' fill='white' opacity='.65'/><rect x='34' y='26' width='18' height='18' rx='5' fill='white' opacity='.8'/><rect x='12' y='34' width='18' height='18' rx='5' fill='white' opacity='.5'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg:#07070d; --bg2:#0b0b15; --panel:rgba(255,255,255,.04); --panel2:rgba(255,255,255,.07);
+  --border:rgba(255,255,255,.09); --border2:rgba(255,255,255,.16);
+  --text:#f2f2f8; --muted:#9a99ad; --dim:#63627a;
+  --a1:#6c5ce7; --a2:#00d4ff; --a3:#ff6ea9;
+  --grad:linear-gradient(120deg,var(--a1),var(--a2));
+  --radius:18px; --shadow:0 24px 60px rgba(0,0,0,.45);
+  --font-head:'Space Grotesk',sans-serif; --font-body:'Inter',sans-serif; --font-mono:'JetBrains Mono',monospace;
+}
+html[data-theme="aurora"]{ --bg:#050b12; --bg2:#081420; --a1:#00c9a7; --a2:#4d8dff; --a3:#ffd166; --grad:linear-gradient(120deg,#00c9a7,#4d8dff); }
+html[data-theme="daylight"]{ --bg:#f4f5fa; --bg2:#eceef6; --panel:rgba(10,12,30,.04); --panel2:rgba(10,12,30,.07); --border:rgba(10,12,30,.12); --border2:rgba(10,12,30,.2); --text:#15152b; --muted:#5a5a75; --dim:#8a8aa5; --a1:#5b4ce0; --a2:#0aa5e0; --a3:#e0529c; --shadow:0 24px 60px rgba(30,30,80,.12); }
+html[data-theme="mono"]{ --bg:#0a0a0a; --bg2:#111; --a1:#e8e8e8; --a2:#9a9a9a; --a3:#fff; --grad:linear-gradient(120deg,#fff,#9a9a9a); }
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6;overflow-x:hidden;transition:background .4s,color .4s}
+::selection{background:var(--a1);color:#fff}
+h1,h2,h3,h4{font-family:var(--font-head);line-height:1.15;letter-spacing:-.02em}
+a{color:inherit;text-decoration:none}
+img{max-width:100%}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mono{font-family:var(--font-mono)}
+
+/* ambient background */
+.bg-orbs{position:fixed;inset:0;z-index:-1;overflow:hidden}
+.bg-orbs::before,.bg-orbs::after{content:"";position:absolute;width:60vw;height:60vw;border-radius:50%;filter:blur(120px);opacity:.16}
+.bg-orbs::before{background:var(--a1);top:-25vw;right:-15vw;animation:drift 22s ease-in-out infinite alternate}
+.bg-orbs::after{background:var(--a2);bottom:-30vw;left:-18vw;animation:drift 28s ease-in-out infinite alternate-reverse}
+@keyframes drift{to{transform:translate(8vw,6vh) scale(1.15)}}
+.grid-lines{position:fixed;inset:0;z-index:-1;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 30%,transparent 75%);opacity:.5}
+
+/* ============ NAV ============ */
+header{position:sticky;top:0;z-index:100;backdrop-filter:blur(18px);background:color-mix(in srgb,var(--bg) 75%,transparent);border-bottom:1px solid var(--border)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:72px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--font-head);font-weight:700;font-size:1.3rem}
+.logo svg{width:30px;height:30px}
+.nav-links{display:flex;gap:30px;font-size:.92rem;color:var(--muted)}
+.nav-links a{transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{display:flex;gap:12px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:12px;font-weight:600;font-size:.92rem;border:1px solid var(--border2);cursor:pointer;transition:.25s;font-family:var(--font-body);background:transparent;color:var(--text)}
+.btn:hover{border-color:var(--a2);transform:translateY(-2px)}
+.btn-primary{background:var(--grad);border:none;color:#fff;box-shadow:0 8px 28px color-mix(in srgb,var(--a1) 45%,transparent)}
+.btn-primary:hover{box-shadow:0 12px 36px color-mix(in srgb,var(--a2) 55%,transparent)}
+.btn-sm{padding:8px 16px;font-size:.85rem}
+.nav-burger{display:none;background:none;border:none;color:var(--text);cursor:pointer}
+
+/* ============ HERO ============ */
+.hero{padding:96px 0 60px;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border:1px solid var(--border2);border-radius:100px;font-size:.8rem;color:var(--muted);margin-bottom:26px}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--a2);box-shadow:0 0 12px var(--a2);animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.hero h1{font-size:clamp(2.6rem,5vw,4.2rem);font-weight:700}
+.hero p.lead{margin:22px 0 34px;color:var(--muted);font-size:1.13rem;max-width:34rem}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
+.hero-meta{display:flex;gap:26px;margin-top:38px;color:var(--dim);font-size:.85rem;flex-wrap:wrap}
+.hero-meta b{color:var(--text);font-family:var(--font-head)}
+.hero-meta span{display:flex;align-items:center;gap:7px}
+
+/* hero widget board */
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;perspective:1200px}
+.wg{background:var(--panel2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;backdrop-filter:blur(14px);box-shadow:var(--shadow);animation:float 7s ease-in-out infinite;position:relative;overflow:hidden}
+.wg:nth-child(2){animation-delay:-2s}.wg:nth-child(3){animation-delay:-4s}.wg:nth-child(4){animation-delay:-1s}.wg:nth-child(5){animation-delay:-3s}.wg:nth-child(6){animation-delay:-5s}
+@keyframes float{50%{transform:translateY(-9px)}}
+.wg .wicon{width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center;margin-bottom:12px;color:#fff}
+.wg h4{font-size:.85rem;color:var(--muted);font-weight:500}
+.wg .val{font-family:var(--font-head);font-size:1.5rem;font-weight:700;margin-top:2px}
+.wg.span2{grid-column:span 2}
+.wg .bars{display:flex;gap:6px;align-items:flex-end;height:52px;margin-top:10px}
+.wg .bars i{flex:1;background:var(--grad);border-radius:4px;opacity:.85;animation:grow 1.2s ease}
+@keyframes grow{from{transform:scaleY(.2)}}
+.wg .track{height:6px;background:var(--panel);border-radius:99px;margin-top:14px;overflow:hidden}
+.wg .track i{display:block;height:100%;width:62%;background:var(--grad);border-radius:99px;animation:fill 2.4s ease}
+@keyframes fill{from{width:0}}
+
+/* ============ SECTIONS ============ */
+section{padding:96px 0}
+.sec-head{text-align:center;max-width:44rem;margin:0 auto 60px}
+.sec-head .kicker{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:var(--a2);margin-bottom:16px}
+.sec-head h2{font-size:clamp(2rem,3.6vw,3rem)}
+.sec-head p{color:var(--muted);margin-top:16px;font-size:1.05rem}
+
+/* logos strip */
+.strip{border-block:1px solid var(--border);padding:26px 0;overflow:hidden}
+.strip .row{display:flex;gap:70px;justify-content:center;color:var(--dim);font-family:var(--font-head);font-weight:600;font-size:1rem;opacity:.75;flex-wrap:wrap}
+
+/* features */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:32px;transition:.3s;position:relative;overflow:hidden}
+.card:hover{transform:translateY(-6px);border-color:var(--border2);background:var(--panel2)}
+.card .ficon{width:46px;height:46px;border-radius:13px;background:var(--panel2);border:1px solid var(--border);display:grid;place-items:center;margin-bottom:20px;color:var(--a2)}
+.card h3{font-size:1.15rem;margin-bottom:10px}
+.card p{color:var(--muted);font-size:.94rem}
+.card::after{content:"";position:absolute;inset:0;background:radial-gradient(500px circle at var(--mx,50%) var(--my,50%),color-mix(in srgb,var(--a2) 8%,transparent),transparent 45%);opacity:0;transition:.3s;pointer-events:none}
+.card:hover::after{opacity:1}
+
+/* ============ PLAYGROUND ============ */
+.pg{display:grid;grid-template-columns:290px 1fr;gap:26px;align-items:start}
+.pg-panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:24px;position:sticky;top:96px}
+.pg-panel h3{font-size:.8rem;font-family:var(--font-mono);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:22px 0 12px}
+.pg-panel h3:first-child{margin-top:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:8px 14px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:.82rem;font-family:var(--font-body);transition:.2s}
+.chip:hover{border-color:var(--border2);color:var(--text)}
+.chip.on{background:var(--grad);color:#fff;border-color:transparent}
+.swatches{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.swatch{border:1px solid var(--border);border-radius:12px;padding:10px;cursor:pointer;background:transparent;color:var(--muted);font-size:.8rem;font-family:var(--font-body);display:flex;align-items:center;gap:8px;transition:.2s}
+.swatch:hover{border-color:var(--border2)}
+.swatch.on{border-color:var(--a2);color:var(--text);box-shadow:0 0 0 1px var(--a2)}
+.swatch i{width:16px;height:16px;border-radius:5px;flex:none}
+.pg-board{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;min-height:400px}
+.pg-wg{background:var(--panel2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;animation:pop .35s cubic-bezier(.2,.9,.3,1.2);position:relative}
+@keyframes pop{from{opacity:0;transform:scale(.85)}}
+.pg-wg .close{position:absolute;top:12px;right:12px;width:22px;height:22px;border-radius:50%;border:none;background:var(--panel);color:var(--dim);cursor:pointer;font-size:.8rem;line-height:1;display:none}
+.pg-wg:hover .close{display:grid;place-items:center}
+.pg-wg .close:hover{color:var(--text)}
+.pg-wg h4{font-size:.78rem;color:var(--muted);font-weight:500;display:flex;gap:8px;align-items:center}
+.pg-wg .big{font-family:var(--font-head);font-size:1.7rem;font-weight:700;margin-top:6px}
+.pg-wg .sub{font-size:.82rem;color:var(--dim)}
+.pg-wg .wicon{width:32px;height:32px;border-radius:9px;background:var(--grad);display:grid;place-items:center;color:#fff;margin-bottom:10px}
+.pg-wg ul{list-style:none;margin-top:8px}
+.pg-wg li{font-size:.85rem;color:var(--muted);padding:4px 0;display:flex;gap:8px;align-items:center}
+.pg-wg li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--a2)}
+.pg-empty{grid-column:1/-1;display:grid;place-items:center;color:var(--dim);border:2px dashed var(--border);border-radius:var(--radius);padding:60px;text-align:center}
+.hint{margin-top:20px;font-size:.8rem;color:var(--dim);text-align:center}
+
+/* ============ SHOWCASE ============ */
+.show-tabs{display:flex;gap:10px;justify-content:center;margin-bottom:44px;flex-wrap:wrap}
+.show-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.show-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:.3s}
+.show-card:hover{transform:translateY(-6px);border-color:var(--border2)}
+.show-art{height:170px;display:grid;place-items:center;position:relative;overflow:hidden}
+.show-art svg{width:56px;height:56px;color:#fff}
+.show-card .meta{padding:20px 22px;display:flex;justify-content:space-between;align-items:center}
+.show-card .meta h4{font-size:1rem}
+.dl-count{font-size:.75rem;color:var(--dim);margin-top:4px}
+.badge-free,.badge-pro{font-size:.68rem;font-family:var(--font-mono);padding:4px 10px;border-radius:100px;letter-spacing:.08em}
+.badge-free{background:color-mix(in srgb,var(--a2) 18%,transparent);color:var(--a2)}
+.badge-pro{background:color-mix(in srgb,var(--a3) 18%,transparent);color:var(--a3)}
+.art-nova{background:linear-gradient(135deg,#6c5ce7,#00d4ff)}
+.art-pixel{background:linear-gradient(135deg,#ff6ea9,#ffd166)}
+.art-fluent{background:linear-gradient(135deg,#0aa5e0,#00c9a7)}
+.art-retro{background:linear-gradient(135deg,#e0529c,#5b4ce0)}
+.art-midnight{background:linear-gradient(135deg,#141428,#3a2f6e)}
+.art-aurora{background:linear-gradient(135deg,#081420,#00c9a7)}
+.art-daylight{background:linear-gradient(135deg,#f4f5fa,#c9d4f0)}
+.art-mono{background:linear-gradient(135deg,#111,#555)}
+.art-sunset{background:linear-gradient(135deg,#ff9a5c,#e0529c)}
+
+/* ============ PLATFORMS ============ */
+.plat-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.plat{background:var(--panel);border:1px solid var(--border);border-radius:24px;padding:44px;position:relative;overflow:hidden;transition:.3s}
+.plat:hover{border-color:var(--border2)}
+.plat .os{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--a2)}
+.plat h3{font-size:1.7rem;margin:12px 0 10px}
+.plat p{color:var(--muted);font-size:.95rem;margin-bottom:26px}
+.plat ul{list-style:none;margin-bottom:30px}
+.plat li{padding:7px 0;color:var(--muted);font-size:.9rem;display:flex;gap:10px;align-items:center}
+.plat li svg{color:var(--a2);flex:none}
+.plat .dl-btn{width:100%;justify-content:center;padding:15px}
+.plat .ver{margin-top:14px;text-align:center;font-size:.78rem;color:var(--dim)}
+.win-art{position:absolute;top:-70px;right:-70px;width:260px;height:260px;background:radial-gradient(circle,color-mix(in srgb,var(--a2) 22%,transparent),transparent 65%)}
+.and-art{position:absolute;top:-70px;right:-70px;width:260px;height:260px;background:radial-gradient(circle,color-mix(in srgb,var(--a3) 22%,transparent),transparent 65%)}
+kbd{border:1px solid var(--border);padding:2px 7px;border-radius:6px;font-size:.8em}
+
+/* ============ PRICING ============ */
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch}
+.price{background:var(--panel);border:1px solid var(--border);border-radius:24px;padding:36px;display:flex;flex-direction:column;transition:.3s}
+.price:hover{transform:translateY(-6px)}
+.price.hot{border-color:var(--a2);background:linear-gradient(180deg,color-mix(in srgb,var(--a2) 9%,var(--panel)),var(--panel));position:relative}
+.price.hot::before{content:"MOST POPULAR";position:absolute;top:-11px;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:.62rem;letter-spacing:.2em;background:var(--grad);color:#fff;padding:5px 14px;border-radius:100px}
+.price h3{font-size:1.1rem}
+.price .amount{font-family:var(--font-head);font-size:2.7rem;font-weight:700;margin:14px 0 4px}
+.price .amount small{font-size:1rem;color:var(--dim);font-weight:400}
+.price .tag{color:var(--muted);font-size:.88rem;margin-bottom:24px}
+.price ul{list-style:none;margin-bottom:30px;flex:1}
+.price li{padding:8px 0;font-size:.9rem;color:var(--muted);display:flex;gap:10px;align-items:center}
+.price li svg{color:var(--a2);flex:none}
+.price li.off{opacity:.4}
+.price li.off svg{color:var(--dim)}
+
+/* ============ FAQ ============ */
+.faq{max-width:44rem;margin:0 auto}
+.faq details{border:1px solid var(--border);border-radius:14px;margin-bottom:12px;background:var(--panel);overflow:hidden}
+.faq summary{padding:20px 24px;cursor:pointer;font-weight:600;font-family:var(--font-head);list-style:none;display:flex;justify-content:space-between;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:1.3rem;color:var(--a2);transition:.25s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{padding:0 24px 20px;color:var(--muted);font-size:.93rem}
+
+/* ============ CTA ============ */
+.cta-box{background:var(--panel2);border:1px solid var(--border2);border-radius:28px;padding:70px 40px;text-align:center;position:relative;overflow:hidden}
+.cta-box::before{content:"";position:absolute;inset:-40%;background:conic-gradient(from 0deg,transparent,color-mix(in srgb,var(--a2) 12%,transparent),transparent 30%);animation:spin 9s linear infinite}
+@keyframes spin{to{transform:rotate(1turn)}}
+.cta-box>*{position:relative}
+.cta-box h2{font-size:clamp(1.8rem,3.4vw,2.6rem)}
+.cta-box p{color:var(--muted);margin:16px auto 32px;max-width:32rem}
+
+/* ============ FOOTER ============ */
+footer{border-top:1px solid var(--border);padding:64px 0 34px;margin-top:40px}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:50px}
+.foot-grid h4{font-size:.78rem;font-family:var(--font-mono);letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-bottom:18px}
+.foot-grid a{display:block;color:var(--muted);font-size:.9rem;padding:5px 0;transition:.2s}
+.foot-grid a:hover{color:var(--text)}
+.foot-brand p{color:var(--muted);font-size:.9rem;margin-top:14px;max-width:20rem}
+.foot-bottom{border-top:1px solid var(--border);padding-top:28px;display:flex;justify-content:space-between;color:var(--dim);font-size:.82rem;flex-wrap:wrap;gap:12px}
+.foot-bottom a{color:var(--muted)}
+
+/* reveal on scroll */
+.rv{opacity:0;transform:translateY(28px);transition:.7s cubic-bezier(.2,.7,.3,1)}
+.rv.in{opacity:1;transform:none}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:980px){
+  .hero{grid-template-columns:1fr;padding-top:64px}
+  .board{max-width:560px;margin:0 auto}
+  .feat-grid,.show-grid,.price-grid{grid-template-columns:1fr 1fr}
+  .pg{grid-template-columns:1fr}
+  .pg-panel{position:static}
+  .plat-grid{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .nav-links,.nav-cta .btn-ghost{display:none}
+  .nav-burger{display:block}
+  .feat-grid,.show-grid,.price-grid{grid-template-columns:1fr}
+  .board{grid-template-columns:1fr 1fr}
+  .wg.span2{grid-column:span 2}
+}
+</style>
+</head>
+<body>
+<div class="bg-orbs"></div>
+<div class="grid-lines"></div>
+
+<!-- ============ NAV ============ -->
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#top" aria-label="Decklet home">
+      <svg viewBox="0 0 64 64" fill="none"><rect width="64" height="64" rx="14" fill="url(#lg)"/><rect x="12" y="12" width="18" height="18" rx="5" fill="white" opacity=".95"/><rect x="34" y="12" width="18" height="10" rx="5" fill="white" opacity=".65"/><rect x="34" y="26" width="18" height="18" rx="5" fill="white" opacity=".8"/><rect x="12" y="34" width="18" height="18" rx="5" fill="white" opacity=".5"/><defs><linearGradient id="lg" x1="0" y1="0" x2="64" y2="64"><stop stop-color="#6c5ce7"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs></svg>
+      Decklet
+    </a>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#playground">Playground</a>
+      <a href="#showcase">Gallery</a>
+      <a href="#platforms">Download</a>
+      <a href="#pricing">Pricing</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-sm btn-ghost" href="#platforms">Sign in</a>
+      <a class="btn btn-sm btn-primary" href="#platforms">Get Decklet</a>
+      <button class="nav-burger" aria-label="Menu">&#9776;</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<div class="wrap" id="top">
+  <div class="hero">
+    <div>
+      <span class="pill"><span class="dot"></span> v2.4 &ldquo;Nova&rdquo; is live &mdash; widget scripting &amp; Decklet Studio 2.0</span>
+      <h1>Your home screen,<br><span class="grad-text">decked out.</span></h1>
+      <p class="lead">Decklet brings a beautiful, blazing-fast widget stack to <b>Windows</b> and <b>Android</b>. Stack widgets, swap icon packs, theme everything &mdash; or build your own with Decklet Studio.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#platforms">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5 10.5 4.4v7.1H3v-6zm8.5-1.2L21 3v8.5h-9.5V4.3zM3 12.9h7.5V20L3 18.9v-6zm8.5 0H21V21l-9.5-1.3v-6.8z"/></svg>
+          Download for Windows
+        </a>
+        <a class="btn" href="#platforms">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3zm12 0c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3zM6 8.5 17.5 4.2c.8-.3 1.2-1.2.9-2-.3-.8-1.2-1.2-2-.9L4.5 5.5c-.9.4-1.4 1.3-1.4 2.3v.7H6z"/></svg>
+          Get it on Android
+        </a>
+      </div>
+      <div class="hero-meta">
+        <span><b>120+</b> built-in widgets</span>
+        <span><b>4,800+</b> community packs</span>
+        <span><b>2.1M</b> decks shipped</span>
+      </div>
+    </div>
+    <div class="board" aria-hidden="true">
+      <div class="wg"><div class="wicon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><h4>Clock &middot; Local</h4><div class="val" id="heroClock">--:--</div></div>
+      <div class="wg"><div class="wicon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19a4.6 4.6 0 0 0 0-9 6.5 6.5 0 0 0-12.7 1.6A4 4 0 0 0 6 19z"/></svg></div><h4>Weather</h4><div class="val">21&deg;</div><div class="sub" style="color:var(--dim);font-size:.8rem">Partly cloudy &middot; H:24&deg; L:13&deg;</div></div>
+      <div class="wg"><div class="wicon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V6l11-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg></div><h4>Now Playing</h4><div class="val" style="font-size:1.05rem">Midnight Drive</div><div class="track"><i></i></div></div>
+      <div class="wg span2"><div class="wicon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg></div><h4>Focus Trend &middot; This week</h4><div class="bars"><i style="height:40%"></i><i style="height:65%"></i><i style="height:50%"></i><i style="height:85%"></i><i style="height:70%"></i><i style="height:95%"></i><i style="height:60%"></i></div></div>
+      <div class="wg"><div class="wicon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 9h18"/></svg></div><h4>Up Next</h4><ul style="list-style:none;margin-top:8px"><li style="font-size:.82rem;color:var(--muted);padding:3px 0">09:30 &middot; Standup</li><li style="font-size:.82rem;color:var(--muted);padding:3px 0">13:00 &middot; Design sync</li></ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ STRIP ============ -->
+<div class="strip rv">
+  <div class="wrap"><div class="row">
+    <span>&#9733; 4.9 on Google Play</span><span>&#9733; 4.8 Microsoft Store</span><span>Product Hunt &mdash; #1 of the day</span><span>Featured in &ldquo;Best lock-screen apps&rdquo;</span>
+  </div></div>
+</div>
+
+<!-- ============ FEATURES ============ -->
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker">Why Decklet</div>
+      <h2>A whole widget platform,<br>in a <span class="grad-text">2 MB</span> package.</h2>
+      <p>We rebuilt the classic web-stack widget idea from the ground up &mdash; native, private, and endlessly customizable.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="card rv"><div class="ficon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></div><h3>Stackable widgets</h3><p>120+ built-ins &mdash; clocks, weather, music, calendars, RSS, system stats, timers, counters. Drag, resize, stack. Zero lag.</p></div>
+      <div class="card rv"><div class="ficon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="m8.5 8.5 7 7M15.5 8.5l-7 7"/></svg></div><h3>Icon packs, one tap</h3><p>Every icon pack reskins your whole deck instantly &mdash; Nova, Pixel, Fluent, Retro and 4,800+ community packs on the Decklet Hub.</p></div>
+      <div class="card rv"><div class="ficon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 1-9 9 9 9 0 0 1 9-9z"/><path d="M12 3c2.5 2.5 4 5.5 4 9s-1.5 6.5-4 9c-2.5-2.5-4-5.5-4-9s1.5-6.5 4-9z"/><path d="M3.5 9h17M3.5 15h17"/></svg></div><h3>Optional themes</h3><p>Themes are opt-in, never forced. Midnight, Aurora, Daylight and Mono ship free &mdash; or craft your own with live accent colors.</p></div>
+      <div class="card rv"><div class="ficon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 3 4 14h6l-1 7 9-11h-6z"/></svg></div><h3>Native performance</h3><p>Built per-platform &mdash; WinUI on Windows 10/11, native views on Android 8+. Cold start under 300 ms. Battery-friendly by design.</p></div>
+      <div class="card rv"><div class="ficon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 6v6c0 5 3.4 8.3 8 9 4.6-.7 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></div><h3>Private by default</h3><p>Widgets run locally. No account required, no telemetry, no ads. Weather and RSS fetch directly &mdash; your data never touches our servers.</p></div>
+      <div class="card rv"><div class="ficon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 6-6 6 6 6M16 6l6 6-6 6"/></svg></div><h3>Decklet Studio</h3><p>Create your own widgets, icon packs and themes with a visual editor and simple JSON/JS scripting. Publish to the Hub in one click.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PLAYGROUND ============ -->
+<section id="playground" style="background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--a1) 5%,transparent),transparent)">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker">Live playground</div>
+      <h2>Try a deck right here.</h2>
+      <p>Add widgets, switch themes and icon packs &mdash; the whole page is your deck. This is exactly how Decklet feels on desktop and phone.</p>
+    </div>
+    <div class="pg rv">
+      <div class="pg-panel">
+        <h3>Widgets</h3>
+        <div class="chips" id="wgChips">
+          <button class="chip" data-wg="clock">&#9200; Clock</button>
+          <button class="chip" data-wg="weather">&#9925; Weather</button>
+          <button class="chip" data-wg="music">&#127925; Music</button>
+          <button class="chip" data-wg="tasks">&#10003; Tasks</button>
+          <button class="chip" data-wg="calendar">&#128197; Calendar</button>
+          <button class="chip" data-wg="battery">&#128267; Battery</button>
+          <button class="chip" data-wg="notes">&#128221; Notes</button>
+        </div>
+        <h3>Theme <small style="letter-spacing:0">(optional)</small></h3>
+        <div class="swatches" id="themeChips">
+          <button class="swatch on" data-theme="midnight"><i style="background:linear-gradient(135deg,#6c5ce7,#00d4ff)"></i>Midnight</button>
+          <button class="swatch" data-theme="aurora"><i style="background:linear-gradient(135deg,#00c9a7,#4d8dff)"></i>Aurora</button>
+          <button class="swatch" data-theme="daylight"><i style="background:linear-gradient(135deg,#f4f5fa,#c9d4f0)"></i>Daylight</button>
+          <button class="swatch" data-theme="mono"><i style="background:linear-gradient(135deg,#fff,#555)"></i>Mono</button>
+        </div>
+        <h3>Icon pack</h3>
+        <div class="swatches" id="iconChips">
+          <button class="swatch on" data-icons="nova"><i style="background:linear-gradient(135deg,#6c5ce7,#00d4ff)"></i>Nova</button>
+          <button class="swatch" data-icons="pixel"><i style="background:linear-gradient(135deg,#ff6ea9,#ffd166)"></i>Pixel</button>
+          <button class="swatch" data-icons="fluent"><i style="background:linear-gradient(135deg,#0aa5e0,#00c9a7)"></i>Fluent</button>
+          <button class="swatch" data-icons="retro"><i style="background:linear-gradient(135deg,#e0529c,#5b4ce0)"></i>Retro</button>
+        </div>
+      </div>
+      <div>
+        <div class="pg-board" id="pgBoard"></div>
+        <p class="hint">Tip: hover a widget to remove it &middot; theme &amp; icon changes apply everywhere, instantly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SHOWCASE ============ -->
+<section id="showcase">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker">Decklet Hub</div>
+      <h2>Packs &amp; themes, made by the community.</h2>
+      <p>Icon packs and themes are always optional &mdash; install, remix, or publish your own. Here&rsquo;s what&rsquo;s trending this week.</p>
+    </div>
+    <div class="show-tabs rv">
+      <button class="chip on" data-tab="icons">Icon Packs</button>
+      <button class="chip" data-tab="themes">Themes</button>
+      <button class="chip" data-tab="widgets">Widget Decks</button>
+    </div>
+    <div class="show-grid rv" id="showGrid"></div>
+    <div style="text-align:center;margin-top:40px" class="rv"><a class="btn" href="#platforms">Browse all 4,800+ on the Hub &rarr;</a></div>
+  </div>
+</section>
+
+<!-- ============ PLATFORMS ============ -->
+<section id="platforms">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker">Download</div>
+      <h2>One deck. <span class="grad-text">Every device.</span></h2>
+      <p>Your layouts, packs and settings sync end-to-end encrypted between Windows and Android.</p>
+    </div>
+    <div class="plat-grid">
+      <div class="plat rv">
+        <div class="win-art"></div>
+        <div class="os">Windows</div>
+        <h3>Decklet for Windows</h3>
+        <p>Pin widgets to your desktop, taskbar flyouts, or a quick-summon dock with <kbd>Alt+D</kbd>.</p>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>Windows 11 &amp; Windows 10 (1809+)</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>Desktop, taskbar &amp; lock-screen widgets</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>MSIX installer &middot; 2.1 MB &middot; x64 &amp; ARM64</li>
+        </ul>
+        <a class="btn btn-primary dl-btn" href="#" onclick="return false">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5 10.5 4.4v7.1H3v-6zm8.5-1.2L21 3v8.5h-9.5V4.3zM3 12.9h7.5V20L3 18.9v-6zm8.5 0H21V21l-9.5-1.3v-6.8z"/></svg>
+          Download for Windows
+        </a>
+        <div class="ver">v2.4.0 &middot; Nov 2025 &middot; Also on the Microsoft Store</div>
+      </div>
+      <div class="plat rv">
+        <div class="and-art"></div>
+        <div class="os">Android</div>
+        <h3>Decklet for Android</h3>
+        <p>Home-screen widgets in every size, lock-screen widgets, and a glanceable &ldquo;Deck&rdquo; panel from anywhere.</p>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>Android 8.0+ &middot; optimized through 15</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>Home &amp; lock-screen widgets, Material You</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>Google Play &middot; direct APK &middot; 3.4 MB</li>
+        </ul>
+        <a class="btn btn-primary dl-btn" href="#" onclick="return false">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3zm12 0c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3zM6 8.5 17.5 4.2c.8-.3 1.2-1.2.9-2-.3-.8-1.2-1.2-2-.9L4.5 5.5c-.9.4-1.4 1.3-1.4 2.3v.7H6z"/></svg>
+          Get it on Google Play
+        </a>
+        <div class="ver">v2.4.0 &middot; Nov 2025 &middot; Or grab the signed APK below</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="kicker">Pricing</div>
+      <h2>Free forever. <span class="grad-text">Pro if you want more.</span></h2>
+      <p>The core app &mdash; widgets, packs, themes &mdash; is free with no ads, on both platforms, forever.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price rv">
+        <h3>Free</h3>
+        <div class="amount">$0<small>/forever</small></div>
+        <div class="tag">Everything you need to start decking.</div>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>All 120+ core widgets</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>4 built-in themes &amp; icon packs</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>Unlimited decks</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>Community Hub, read-only</li>
+          <li class="off"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 6l12 12M18 6 6 18"/></svg>Cloud sync</li>
+        </ul>
+        <a class="btn" href="#platforms" style="justify-content:center">Download free</a>
+      </div>
+      <div class="price hot rv">
+        <h3>Pro</h3>
+        <div class="amount">$2<small>/month</small></div>
+        <div class="tag">For deck addicts. Cancel anytime.</div>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>Everything in Free</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>End-to-end encrypted sync</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>Exclusive Pro packs &amp; themes</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>Widget scripting &amp; API hooks</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>Animated &amp; interactive widgets</li>
+        </ul>
+        <a class="btn btn-primary" href="#" onclick="return false" style="justify-content:center">Go Pro</a>
+      </div>
+      <div class="price rv">
+        <h3>Studio</h3>
+        <div class="amount">$8<small>/month</small></div>
+        <div class="tag">For creators publishing on the Hub.</div>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>Everything in Pro</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>Decklet Studio 2.0 visual editor</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>Publish packs &amp; themes to the Hub</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>80% revenue share on paid packs</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5 11-11"/></svg>Analytics &amp; early-access channel</li>
+        </ul>
+        <a class="btn" href="#" onclick="return false" style="justify-content:center">Start creating</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head rv"><div class="kicker">FAQ</div><h2>Good questions.</h2></div>
+    <div class="faq rv">
+      <details><summary>Is Decklet really free?</summary><p>Yes &mdash; the full app with all 120+ core widgets, four themes and four icon packs is free forever, with no ads and no account required. Pro adds encrypted sync, scripting and exclusive packs. Studio is for creators who publish to the Hub.</p></details>
+      <details><summary>Do I have to install themes or icon packs?</summary><p>Never. Themes and icon packs are entirely optional &mdash; the app looks great out of the box, and every pack is opt-in per deck. You can also build your own in Decklet Studio.</p></details>
+      <details><summary>How does the Windows version differ from the Android version?</summary><p>Each is a native app: WinUI 3 on Windows 10/11, native views on Android 8+. Decks sync between them, but each version respects its platform &mdash; taskbar flyouts and a quick-summon dock on Windows, home-screen and lock-screen widgets on Android.</p></details>
+      <details><summary>What data does Decklet collect?</summary><p>None. Widgets run locally; weather and RSS fetch straight from providers. Sync (Pro) is end-to-end encrypted. There is no telemetry and no ad SDK anywhere in either app.</p></details>
+      <details><summary>Can I make my own widgets?</summary><p>Yes &mdash; with a Pro plan you get widget scripting (JSON layout + JS hooks), and Studio adds the visual editor plus one-click publishing to the Hub with an 80% revenue share on paid packs.</p></details>
+      <details><summary>Which platforms are supported?</summary><p>Windows 10 (1809+) and Windows 11, x64 and ARM64. Android 8.0 through 15. A dockable web preview is on the roadmap.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section style="padding-top:20px">
+  <div class="wrap">
+    <div class="cta-box rv">
+      <h2>Deck out your screen tonight.</h2>
+      <p>Free download for Windows and Android. No account, no ads &mdash; just widgets.</p>
+      <div class="hero-ctas" style="justify-content:center">
+        <a class="btn btn-primary" href="#platforms">Download Decklet</a>
+        <a class="btn" href="#playground">Try the playground</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="logo" href="#top">
+          <svg viewBox="0 0 64 64" width="28" height="28"><rect width="64" height="64" rx="14" fill="url(#lg2)"/><rect x="12" y="12" width="18" height="18" rx="5" fill="white" opacity=".95"/><rect x="34" y="12" width="18" height="10" rx="5" fill="white" opacity=".65"/><rect x="34" y="26" width="18" height="18" rx="5" fill="white" opacity=".8"/><rect x="12" y="34" width="18" height="18" rx="5" fill="white" opacity=".5"/><defs><linearGradient id="lg2" x1="0" y1="0" x2="64" y2="64"><stop stop-color="#6c5ce7"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs></svg>
+          Decklet
+        </a>
+        <p>Widgets, icon packs and themes for Windows and Android. Made by a small team that stares at home screens too much.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <a href="#features">Features</a><a href="#playground">Playground</a><a href="#platforms">Download</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a>
+      </div>
+      <div>
+        <h4>Community</h4>
+        <a href="#showcase">Decklet Hub</a><a href="#showcase">Icon packs</a><a href="#showcase">Themes</a><a href="#pricing">Creator Studio</a>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <a href="#top">About</a><a href="#top">Blog</a><a href="#top">Press kit</a><a href="#top">Privacy</a><a href="#top">Terms</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>&copy; 2025 Decklet &middot; <a href="https://decklet.io">decklet.io</a></span>
+      <span class="mono">v2.4.0 &middot; built with &#9749; and 2.1 MB of love</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ---------- hero clock ---------- */
+const hc=document.getElementById('heroClock');
+function tick(){const d=new Date();hc.textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+tick();setInterval(tick,10000);
+
+/* ---------- playground ---------- */
+const board=document.getElementById('pgBoard');
+const ICONS={nova:'\u25C6',pixel:'\u25CF',fluent:'\u25A3',retro:'\u259A'};
+let iconPack='nova', deck=[];
+const WIDGETS={
+  clock:()=>({t:'Clock',b:()=>{const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')},s:'Local time'}),
+  weather:()=>({t:'Weather',b:()=>'21\u00B0',s:'Partly cloudy \u00B7 H:24\u00B0 L:13\u00B0'}),
+  music:()=>({t:'Now Playing',b:()=>'Midnight Drive',s:'Neon Waves \u2014 track 3 of 12'}),
+  tasks:()=>({t:'Tasks',list:['Ship v2.4','Reply to Mia','Gym at 18:00']}),
+  calendar:()=>({t:'Up Next',list:['09:30 Standup','13:00 Design sync','16:00 1:1 with Sam']}),
+  battery:()=>({t:'Battery',b:()=>'87%',s:'\u2248 5 h 20 m remaining'}),
+  notes:()=>({t:'Quick note',b:()=>'\u201CIdeas are cheap. Decks are forever.\u201D',s:'Last edited just now'})
+};
+function renderBoard(){
+  board.innerHTML='';
+  if(!deck.length){
+    const e=document.createElement('div');e.className='pg-empty';
+    e.innerHTML='Your deck is empty.<br>Pick some widgets from the panel \u2192';
+    board.appendChild(e);return;
+  }
+  deck.forEach((id,i)=>{
+    const w=WIDGETS[id]();
+    const el=document.createElement('div');el.className='pg-wg';
+    el.innerHTML='<button class="close" title="Remove">\u2715</button>'+
+      '<div class="wicon">'+ICONS[iconPack]+'</div>'+
+      '<h4>'+w.t+'</h4>'+
+      (w.b?'<div class="big">'+w.b()+'</div><div class="sub">'+w.s+'</div>':'')+
+      (w.list?'<ul>'+w.list.map(x=>'<li>'+x+'</li>').join('')+'</ul>':'');
+    el.querySelector('.close').onclick=()=>{deck.splice(i,1);syncChips();renderBoard()};
+    board.appendChild(el);
+  });
+}
+document.querySelectorAll('#wgChips .chip').forEach(c=>{
+  c.onclick=()=>{
+    const id=c.dataset.wg;
+    if(deck.includes(id)){deck=deck.filter(x=>x!==id)}else{deck.push(id)}
+    syncChips();renderBoard();
+  };
+});
+function syncChips(){
+  document.querySelectorAll('#wgChips .chip').forEach(c=>c.classList.toggle('on',deck.includes(c.dataset.wg)));
+}
+deck=['clock','weather','tasks'];syncChips();renderBoard();
+
+/* theme + icon switching (applies to whole page) */
+document.querySelectorAll('#themeChips .swatch').forEach(s=>{
+  s.onclick=()=>{
+    document.documentElement.dataset.theme=s.dataset.theme;
+    document.querySelectorAll('#themeChips .swatch').forEach(x=>x.classList.toggle('on',x===s));
+  };
+});
+document.querySelectorAll('#iconChips .swatch').forEach(s=>{
+  s.onclick=()=>{
+    iconPack=s.dataset.icons;
+    document.querySelectorAll('#iconChips .swatch').forEach(x=>x.classList.toggle('on',x===s));
+    renderBoard();
+  };
+});
+
+/* ---------- showcase tabs ---------- */
+const SHOW={
+  icons:[
+    ['Nova','by Decklet Team','art-nova','1.2M','free'],
+    ['Pixel Pop','by mira.k','art-pixel','860K','free'],
+    ['Fluent Plus','by ndsgn','art-fluent','640K','pro'],
+    ['Retro-86','by cassette.wav','art-retro','410K','free'],
+    ['Nebula','by orion','art-aurora','380K','pro'],
+    ['PaperCut','by studio.ko','art-daylight','290K','free']
+  ],
+  themes:[
+    ['Midnight','built-in','art-midnight','\u2014','free'],
+    ['Aurora','built-in','art-aurora','\u2014','free'],
+    ['Daylight','by Decklet Team','art-daylight','720K','free'],
+    ['Mono','built-in','art-mono','\u2014','free'],
+    ['Sunset Fade','by lumen','art-sunset','510K','pro'],
+    ['Nova Glow','by ndsgn','art-nova','460K','pro']
+  ],
+  widgets:[
+    ['Minimal Desk','by decklord','art-mono','980K','free'],
+    ['Gamer HUD','by fps.frank','art-retro','870K','free'],
+    ['Focus Flow','by mira.k','art-aurora','630K','pro'],
+    ['Kaiju Stats','by orion','art-nova','520K','free'],
+    ['Lo-fi Radio','by cassette.wav','art-pixel','480K','free'],
+    ['Dev Dashboard','by ndsgn','art-fluent','350K','pro']
+  ]
+};
+const grid=document.getElementById('showGrid');
+function renderShow(tab){
+  grid.innerHTML=SHOW[tab].map(([n,by,art,dl,b])=>(
+    '<div class="show-card">'+
+      '<div class="show-art '+art+'">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>'+
+      '</div>'+
+      '<div class="meta"><div><h4>'+n+'</h4><div class="dl-count">'+by+' \u00B7 '+dl+' installs</div></div>'+
+      '<span class="'+(b==='free'?'badge-free':'badge-pro')+'">'+b.toUpperCase()+'</span></div>'+
+    '</div>'
+  )).join('');
+}
+document.querySelectorAll('.show-tabs .chip').forEach(c=>{
+  c.onclick=()=>{
+    document.querySelectorAll('.show-tabs .chip').forEach(x=>x.classList.toggle('on',x===c));
+    renderShow(c.dataset.tab);
+  };
+});
+renderShow('icons');
+
+/* ---------- reveal on scroll ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+/* ---------- card glow follow ---------- */
+document.querySelectorAll('.card').forEach(c=>{
+  c.addEventListener('mousemove',e=>{
+    const r=c.getBoundingClientRect();
+    c.style.setProperty('--mx',(e.clientX-r.left)+'px');
+    c.style.setProperty('--my',(e.clientY-r.top)+'px');
+  });
+});
+</script>
+</body>
+</html>
